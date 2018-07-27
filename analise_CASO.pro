@@ -15,7 +15,7 @@ pro analise_CASO
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; C A L M O ;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
-dir='D:\2017data\work\GRAU\'
+;dir='D:\2017data\work\GRAU\'
 ;f = findfile(dir+'ATB201310*'+'t'+'*.save')
 ;f = findfile(dir+'ATB2014*'+'t.save')
 
