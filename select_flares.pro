@@ -1,18 +1,21 @@
-pro select_Flares,ano,tipo,dates,times
+pro select_Flares, ano,tipo,dates,times
 ;rotina que retorna os dias do tipo do flare.
 ;flare que acontecem entre a 08:00 e 20:00 UT periodo iluminado para america latina e norte americano
 ; utiliza os arquivos GOES-XRS-REPOT_aaaa do NOAA.
 ; dependencia da rotina readcol (SSW)
+; input:
+; ano     :nome do arquico em string
+; tipo    :tipo do flare, 'M' OU 'X' // string ou 'A' , 'B', 'C'
+;         :tio do flare, 'XM' prita as datas para os dois
+;         :'EX' ,'EM' dias dos flares sem condiçao diurna // string
+; output, saidas
+; dates   :matrix de strings com as datas
+; times   :matrix com strings dos horarios de times(3,*), inicio , pico , fim
+;         :fomato string HHMM
+;  Sintax de uso
+;   select_Flares,'2006','X',dates,times
+;   
 ; by Paulo, C.M. >> 29/07/2018 
-
-;INICO PARA COMILAR NO WINDOWS
-;ano='2014'
-;tipo='EM'
-;f = findfile('D:\2017data\Classifica_dias_pertu\goes-xrs-report_'+ano+'.txt')
-;for i=0,N_ELEMENTS(f)-1 do begin
-;  print, f[i]
-; readcol,f[i],dita, b_time, e_time, pk_time,format='a,a,a,a,x,x,x,x'
-; readcol,f[i],co,cln,format='x,x,x,x,a,a,x,x'
 
 ;INICIO PARA CHAMAR COMO PRO
 readcol,ano,dita, b_time, e_time, pk_time,format='a,a,a,a,x,x,x,x'
@@ -20,20 +23,34 @@ readcol,ano,co,cln,format='x,x,x,x,a,a,x,x'
 data=strmid(dita,5,6)
 if N_ELEMENTS(pk_time) eq N_ELEMENTS(co) then print, 'O. K.' else stop 
 
+;INICO PARA COMpILAR NO WINDOWS
+;ano='2014'
+;tipo='M'
+;f = findfile('D:\2017data\Classifica_dias_pertu\goes-xrs-report_'+ano+'.txt')
+;for i=0,N_ELEMENTS(f)-1 do begin
+;  print, f[i]
+; readcol,f[i],dita, b_time, e_time, pk_time,format='a,a,a,a,x,x,x,x'
+; readcol,f[i],co,cln,format='x,x,x,x,a,a,x,x'
+;data=strmid(dita,5,6)
+
+;;;;;;
+if tipo eq 'A' or tipo eq 'B' or tipo eq 'C' or tipo eq 'M' or tipo eq 'X' OR tipo eq 'XM' $ 
+  or tipo eq 'MX' or tipo eq 'EX' or tipo eq 'EM' then begin
 if tipo eq 'A' or tipo eq 'B' or tipo eq 'C' or tipo eq 'M' or tipo eq 'X' then begin
 um =where(pk_time eq tipo, lu)
 doi=where(cln eq tipo, ld)
 tre=where(co eq tipo , ll)
-if lu gt 0 and ld gt 0 and ll gt 0 then  t=[um,doi,tre]
-if lu eq 0 and ld eq 0 and ll eq 0 then stop 
-if lu eq 0 and ld gt 0 and ll gt 0 then  t=[doi,tre]
-if lu gt 0 and ld eq 0 and ll gt 0 then  t=[um,tre]
-if lu gt 0 and ld gt 0 and ll eq 0 then  t=[um,doi]
-if lu gt 0 and ld eq 0 and ll eq 0 then  t=[um]
-if lu eq 0 and ld gt 0 and ll eq 0 then  t=[doi]
-if lu eq 0 and ld eq 0 and ll gt 0 then  t=[tre]
-ts=t[sort(t)]
+;;;
+te=[um,doi,tre]
+tn=where(te ne -1,cton)
+if cton eq 0 then stop
+tt=te[tn]
+ts=tt[sort(tt)]
 endif
+endif Else begin
+print, 'selecione um tipo de flare valido ::: A , B , C , M , X ..'
+stop
+endElse
 ;;;;;;;;//////////////;;;;;;;;;;;;;;;;
 if  tipo eq 'XM' or tipo eq 'MX' or tipo eq 'EX' or tipo eq 'EM' then begin 
 cvec=['M','X']
@@ -42,15 +59,13 @@ um =where(pk_time eq cvec[ev], lu)
 doi=where(cln eq cvec[ev], ld)
 tre=where(co eq cvec[ev] , ll)
 ;ler e criar a lista de posições da classe do flare
-if lu gt 0 and ld gt 0 and ll gt 0 then  t=[um,doi,tre]
-if lu eq 0 and ld eq 0 and ll eq 0 then stop 
-if lu eq 0 and ld gt 0 and ll gt 0 then  t=[doi,tre]
-if lu gt 0 and ld eq 0 and ll gt 0 then  t=[um,tre]
-if lu gt 0 and ld gt 0 and ll eq 0 then  t=[um,doi]
-if lu gt 0 and ld eq 0 and ll eq 0 then  t=[um]
-if lu eq 0 and ld gt 0 and ll eq 0 then  t=[doi]
-if lu eq 0 and ld eq 0 and ll gt 0 then  t=[tre]
-if cvec[ev] eq 'M' then tsM=t[sort(t)] else tsX=t[sort(t)] 
+te=[um,doi,tre]
+tn=where(te ne -1,cton)
+if cton eq 0 then stop
+tt=te[tn]
+t=tt[sort(tt)]
+
+if cvec[ev] eq 'M' then tsM=t else tsX=t
 endfor
 endif
 ;;;;;;;;;;;;;; seleciona o periodo dirno 
